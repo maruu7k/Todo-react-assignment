@@ -1,25 +1,58 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
 
-function App() {
+//userId
+//loading logic
+
+function TodoApp() {
+  const [todos, setTodos] = useState([]);
+  const [userId, setUserId] = useState("1");
+  const [fetching, setFetching] = useState(false);
+
+  useEffect(() => {
+    setFetching(true);
+    //fetch returns a promise
+    fetch(`https://dummyjson.com/todos/user/${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setTodos(data.todos);
+        setFetching(false);
+      });
+  }, [userId]);
+
+  const handleChange = (event) => {
+    // console.log("user changed!", event);
+    // console.log(event.target);
+    // console.log(event.target.value);
+    setUserId(event.target.value);
+  };
+
+  // console.log("userId", userId);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <section>
+      <header>
+        <h1> Todos</h1>
       </header>
-    </div>
+      <div>
+        <label htmlFor="user"> Please Select a user: </label>
+        <select id="user" onChange={handleChange}>
+          <option value="1">Arthur </option>
+          <option value="2">Lily</option>
+          <option value="3">George</option>
+        </select>
+      </div>
+      <main>
+        {fetching ? (
+          <p> Data is Loading</p>
+        ) : (
+          <ul>
+            {todos.map((item) => {
+              return <li key={item.id}> {item.todo}</li>;
+            })}
+          </ul>
+        )}
+      </main>
+    </section>
   );
 }
 
-export default App;
+export default TodoApp;
